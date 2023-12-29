@@ -1,0 +1,6 @@
+fastapi==0.90.1
+uvicorn==0.13.4
+prometheus_fastapi_instrumentator
+mlflow
+scikit-learn
+pandas

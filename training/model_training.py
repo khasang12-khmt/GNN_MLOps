@@ -35,10 +35,7 @@ def train():
         mlflow.sklearn.log_model(forest, "random-forest-model")
 
         # log model performance 
-        #mse = mean_squared_error(y_test, predictions)
         mlflow.log_params(params)
-        #mlflow.log_metric("mse", mse)
-        #print("  mse: %f" % mse)
 
-if __name__ == "__main__":
-    train()
+# if __name__ == "__main__":
+#     train()

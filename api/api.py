@@ -24,13 +24,29 @@ async def startup():
 
 
 @app.get("/predict/")
-def model_output(sepal_length: float, sepal_width: float, petal_length: float, petal_width: float):
+def model_output(user: int, item: int):
     print("Works I")
     model_name = fetch_latest_model()
     model = fetch_latest_version(model_name)
     print("Works II")
-    input = pd.DataFrame({"sepal_length": [sepal_length], "sepal_width": [sepal_width], "petal_length": [petal_length], "petal_width": [petal_width]})
+    # Prepare the model input
+    model_input = pd.DataFrame({"user_indices": [user], "item_indices": [item]})
+    #model_input = [user,item]
 
-    prediction = model.predict(input)
-    print(prediction)
-    return {"prediction": prediction[0]}
+    # Make predictions using the model
+    prediction = model.predict(model_input)
+
+    # Return the prediction as a JSON response
+    return prediction
+
+# @app.get("/predict/")
+# def model_output(sepal_length: float, sepal_width: float, petal_length: float, petal_width: float):
+#     print("Works I")
+#     model_name = fetch_latest_model()
+#     model = fetch_latest_version(model_name)
+#     print("Works II")
+#     input = pd.DataFrame({"sepal_length": [sepal_length], "sepal_width": [sepal_width], "petal_length": [petal_length], "petal_width": [petal_width]})
+
+#     prediction = model.predict(input)
+#     print(prediction)
+#     return {"prediction": prediction[0]}

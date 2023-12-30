@@ -1,7 +1,7 @@
 ###
 ### A complete description of a Prefect Deployment for flow 'train'
 ###
-name: train-iris
+name: train-movielens
 description: null
 version: 6db4ccf891a8d93f47fa6179b5ff3493
 # The work queue that will handle this deployment's runs
@@ -27,10 +27,22 @@ flow_name: train
 manifest_path: null
 storage: null
 path: /training
-entrypoint: model_training.py:train
+entrypoint: main.py:train
 parameter_openapi_schema:
   title: Parameters
   type: object
   properties: {}
   required: null
   definitions: null
+
+# flow_name: train
+# manifest_path: null
+# storage: null
+# path: /training
+# entrypoint: main.py:train
+# parameter_openapi_schema:
+#   title: Parameters
+#   type: object
+#   properties: {}
+#   required: null
+#   definitions: null

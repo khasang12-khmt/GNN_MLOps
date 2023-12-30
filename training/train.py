@@ -55,11 +55,11 @@ def train_opt(args, data, show_loss, show_topk):
                     print('\n')
         
             saved_model_path = "./models"
-            tf.saved_model.save(model, saved_model_path)
-            
-            mlflow.tensorflow.log_model(model,artifact_path="kgcn_model")
+            # tf.saved_model.save(model, saved_model_path)
+            input_example = train_data[:3, :]
+            mlflow.tensorflow.log_model(model,artifact_path="kgcn_model",custom_objects={'KGCN': KGCN}, input_example=input_example)
             #mlflow.pyfunc.log_model(python_model=model, artifact_path="kgcn-model")
-
+            #mlflow.log_artifacts(saved_model_path,artifact_path="kgcn-model")
             # log model performance 
             mlflow.log_params(args.to_dict())
 

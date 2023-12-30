@@ -127,34 +127,40 @@ class KGCN(mlflow.pyfunc.PythonModel, tf.Module):
         return sess.run([self.item_indices, self.scores_normalized], feed_dict)
     
     def load_context(self, context):
-        # Load artifacts or other context-specific information
-        # This method is called when the model is loaded into the runtime environment
-        # You can use this method to load any additional information or setup required for predictions
-        pass
+        # Load your TensorFlow model using the provided context
+        self.model = tf.saved_model.load(context.artifacts["model"])
     
-    def predict(self, model_input):
-        # Define the prediction logic
-        # This method is called when making predictions using the loaded model
-        # It should take the model_input and return the model_output
-        # Modify the logic based on your specific prediction requirements
+    @tf.function(input_signature=[tf.TensorSpec(shape=[2,], dtype=tf.int32)])
+    def __call__(self, data):
+        return self.predict(None, data)
+    
+    @tf.function(input_signature=[tf.TensorSpec(shape=[2,], dtype=tf.int32)])
+    def call(self, data):
+        return self.predict(None, data)
 
-        # Example: Assuming model_input is a dictionary containing user_indices and item_indices
-        user_indices = model_input.get("user_indices")
-        item_indices = model_input.get("item_indices")
+    def predict(self, context, model_input):
+        print("custom model called")
+        
+        # Assuming model_input is a NumPy array with two columns: user indices and item indices
+        user_indices = model_input[0]
+        item_indices = model_input[1]
 
         # Perform the prediction logic using the loaded model
         feed_dict = {
             self.user_indices: user_indices,
-            self.item_indices: item_indices
+            self.item_indices: item_indices,
         }
-
-        # Run the session to get the prediction scores
-        scores_normalized = self.sess.run(self.scores_normalized, feed_dict)
+        
+        scores_normalized = None
+        with tf.compat.v1.Session() as sess:
+            # Run the session to get the prediction scores
+            items, scores = self.get_scores(sess, {model.user_indices: [user] * batch_size,
+                                                    model.item_indices: test_item_list[start:start + batch_size]})
 
         # Example: Assuming model_output is a dictionary containing item_indices and corresponding scores
         model_output = {
+            "user_indices": user_indices,
             "item_indices": item_indices,
-            "scores_normalized": scores_normalized
+            "scores_normalized": scores_normalized.tolist(),  # Convert to list if needed
         }
-
         return model_output

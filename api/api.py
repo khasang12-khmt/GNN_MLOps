@@ -31,10 +31,9 @@ def model_output(user: int, item: int):
     print("Works II")
     # Prepare the model input
     model_input = pd.DataFrame({"user_indices": [user], "item_indices": [item]})
-    #model_input = [user,item]
 
     # Make predictions using the model
-    prediction = model.predict(model_input)
+    prediction = model.predict([user,item])
 
     # Return the prediction as a JSON response
     return prediction

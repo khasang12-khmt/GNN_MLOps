@@ -24,17 +24,15 @@ async def startup():
 
 
 @app.get("/predict/")
-def model_output(user: int, item: int):
+def model_output(user: int):
     print("Works I")
     model_name = fetch_latest_model()
     model = fetch_latest_version(model_name)
     print("Works II")
     # Prepare the model input
-    model_input = pd.DataFrame({"user_indices": [user], "item_indices": [item]})
-
     # Make predictions using the model
-    prediction = model.predict([user,item])
-
+    prediction = model.predict([user])
+    print(prediction)
     # Return the prediction as a JSON response
     return prediction
 

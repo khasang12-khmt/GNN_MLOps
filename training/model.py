@@ -130,37 +130,32 @@ class KGCN(mlflow.pyfunc.PythonModel, tf.Module):
         # Load your TensorFlow model using the provided context
         self.model = tf.saved_model.load(context.artifacts["model"])
     
-    @tf.function(input_signature=[tf.TensorSpec(shape=[2,], dtype=tf.int32)])
+    @tf.function(input_signature=[tf.TensorSpec(shape=[1,], dtype=tf.int32)])
     def __call__(self, data):
         return self.predict(None, data)
     
-    @tf.function(input_signature=[tf.TensorSpec(shape=[2,], dtype=tf.int32)])
+    @tf.function(input_signature=[tf.TensorSpec(shape=[1,], dtype=tf.int32)])
     def call(self, data):
         return self.predict(None, data)
 
     def predict(self, context, model_input):
         print("custom model called")
-        
-        # Assuming model_input is a NumPy array with two columns: user indices and item indices
-        user_indices = model_input[0]
-        item_indices = model_input[1]
+        try:
 
-        # Perform the prediction logic using the loaded model
-        feed_dict = {
-            self.user_indices: user_indices,
-            self.item_indices: item_indices,
-        }
-        
-        scores_normalized = None
-        with tf.compat.v1.Session() as sess:
-            # Run the session to get the prediction scores
-            items, scores = self.get_scores(sess, {model.user_indices: [user] * batch_size,
-                                                    model.item_indices: test_item_list[start:start + batch_size]})
-
-        # Example: Assuming model_output is a dictionary containing item_indices and corresponding scores
-        model_output = {
-            "user_indices": user_indices,
-            "item_indices": item_indices,
-            "scores_normalized": scores_normalized.tolist(),  # Convert to list if needed
-        }
-        return model_output
+            # Perform the prediction logic using the loaded model
+            feed_dict = {
+                self.user_indices: model_input*10, # get 10 recs
+                self.item_indices: self.item_indices
+            }
+            item_score_map = dict()
+            with tf.compat.v1.Session() as sess:
+                # Run the session to get the prediction scores
+                items, scores = self.get_scores(sess, feed_dict)
+                for item, score in zip(items, scores):
+                    item_score_map[item] = score
+            result = list(item_score_map.items())
+            print(result)
+            return result
+        except Exception as e:
+            print(e)
+            return [("error", str(e))]

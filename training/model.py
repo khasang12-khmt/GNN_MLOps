@@ -141,7 +141,6 @@ class KGCN(mlflow.pyfunc.PythonModel, tf.Module):
     def predict(self, context, model_input):
         print("custom model called")
         try:
-
             # Perform the prediction logic using the loaded model
             feed_dict = {
                 self.user_indices: model_input*10, # get 10 recs
